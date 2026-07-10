@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
-  { href: "/products", label: "Barang", icon: "📦" },
+  { href: "/categories", label: "Kategori", icon: "🏷️" },
+  { href: "/products", label: "Produk", icon: "📦" },
+  { href: "/inventory", label: "Inventaris", icon: "📋" },
   { href: "/stock-in", label: "Barang Masuk", icon: "📥" },
   { href: "/stock-out", label: "Barang Keluar", icon: "📤" },
   { href: "/search", label: "Pencarian", icon: "🔍" },
-  { href: "/reports", label: "Laporan", icon: "📋" },
+  { href: "/reports", label: "Laporan", icon: "📈" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
