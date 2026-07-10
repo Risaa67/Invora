@@ -1,4 +1,4 @@
-# Panduan Setup Invora
+# Panduan Setup Invora - v1.1
 
 ## 1. Buat Project Supabase
 
