@@ -13,7 +13,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +33,6 @@ export default function SignupPage() {
       return;
     }
 
-    // Daftar akun baru
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -45,13 +44,11 @@ export default function SignupPage() {
       return;
     }
 
-    // Jika signup berhasil dan ada session, langsung redirect
     if (data.session) {
       router.replace("/dashboard");
       return;
     }
 
-    // Jika tidak ada session (email confirm required), coba login otomatis
     const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,

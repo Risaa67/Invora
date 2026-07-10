@@ -12,16 +12,20 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
   const router = useRouter();
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        router.replace("/dashboard");
-        return;
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session) {
+          router.replace("/dashboard");
+        } else {
+          setCheckingSession(false);
+        }
+      } catch {
+        setCheckingSession(false);
       }
-      setCheckingSession(false);
     };
     checkSession();
   }, [supabase, router]);
