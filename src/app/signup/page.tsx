@@ -33,12 +33,10 @@ export default function SignupPage() {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({
+    // Daftar akun baru
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-      },
     });
 
     if (error) {
@@ -47,8 +45,24 @@ export default function SignupPage() {
       return;
     }
 
-    setSuccess("Akun berhasil dibuat! Silakan cek email untuk verifikasi, lalu login.");
-    setLoading(false);
+    // Jika signup berhasil dan ada session, langsung redirect
+    if (data.session) {
+      router.replace("/dashboard");
+      return;
+    }
+
+    // Jika tidak ada session (email confirm required), coba login otomatis
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (!loginError) {
+      router.replace("/dashboard");
+    } else {
+      setSuccess("Akun berhasil dibuat! Silakan login.");
+      setLoading(false);
+    }
   };
 
   return (
