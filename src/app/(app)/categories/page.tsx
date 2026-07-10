@@ -30,7 +30,7 @@ export default function CategoriesPage() {
 
     // Hitung jumlah produk per kategori
     const counts: Record<string, number> = {};
-    productsRes.data?.forEach((p) => {
+    (productsRes.data || []).forEach((p: { kategori_id?: string | null }) => {
       if (p.kategori_id) {
         counts[p.kategori_id] = (counts[p.kategori_id] || 0) + 1;
       }
