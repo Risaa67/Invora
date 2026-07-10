@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 
 const menuItems = [
   { href: "/dashboard", label: "Dashboard", icon: "📊" },
+  { href: "/customers", label: "Pelanggan", icon: "👥" },
+  { href: "/orders", label: "Pesanan", icon: "🛒" },
   { href: "/categories", label: "Kategori", icon: "🏷️" },
   { href: "/products", label: "Produk", icon: "📦" },
   { href: "/inventory", label: "Inventaris", icon: "📋" },
