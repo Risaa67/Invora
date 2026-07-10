@@ -70,14 +70,14 @@ export default function DashboardPage() {
       ]);
 
       const products = (productsRes.data || []) as { stok: number; harga: number }[];
-      const orders = (ordersRes.data || []) as { status: string; total: number }[];
+      const ordersData = ordersRes.data || [];
       const totalBarang = products.length;
       const stokMenipis = products.filter((p: { stok: number }) => p.stok <= 5).length;
       const totalNilaiStok = products.reduce((acc: number, p: { harga: number; stok: number }) => acc + (p.harga || 0) * (p.stok || 0), 0);
-      const totalPendapatan = orders
+      const totalPendapatan = ordersData
         .filter((o: { status: string }) => o.status !== "cancelled")
         .reduce((acc: number, o: { total: number }) => acc + (o.total || 0), 0);
-      const pesananPending = orders.filter((o: { status: string }) => o.status === "pending").length;
+      const pesananPending = ordersData.filter((o: { status: string }) => o.status === "pending").length;
 
       setStats({
         totalBarang,
@@ -86,7 +86,7 @@ export default function DashboardPage() {
         stokMenipis,
         totalKategori: categoriesRes.data?.length || 0,
         totalNilaiStok,
-        totalPesanan: orders.length,
+        totalPesanan: ordersData.length,
         pesananPending,
         totalPendapatan,
         totalPelanggan: customersRes.data?.length || 0,
@@ -95,7 +95,7 @@ export default function DashboardPage() {
       setLowStockProducts(lowStockRes.data || []);
       setRecentStockIn(recentInRes.data || []);
       setRecentStockOut(recentOutRes.data || []);
-      setRecentOrders(orders);
+      setRecentOrders(ordersData);
       setTopProducts(topData.data || []);
       setLoading(false);
     };
