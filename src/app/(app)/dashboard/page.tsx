@@ -69,15 +69,15 @@ export default function DashboardPage() {
         supabase.from("customers").select("id"),
       ]);
 
-      const products = productsRes.data || [];
-      const orders = ordersRes.data || [];
+      const products = (productsRes.data || []) as { stok: number; harga: number }[];
+      const orders = (ordersRes.data || []) as { status: string; total: number }[];
       const totalBarang = products.length;
-      const stokMenipis = products.filter((p) => p.stok <= 5).length;
-      const totalNilaiStok = products.reduce((acc, p) => acc + (p.harga || 0) * (p.stok || 0), 0);
+      const stokMenipis = products.filter((p: { stok: number }) => p.stok <= 5).length;
+      const totalNilaiStok = products.reduce((acc: number, p: { harga: number; stok: number }) => acc + (p.harga || 0) * (p.stok || 0), 0);
       const totalPendapatan = orders
-        .filter((o) => o.status !== "cancelled")
-        .reduce((acc, o) => acc + (o.total || 0), 0);
-      const pesananPending = orders.filter((o) => o.status === "pending").length;
+        .filter((o: { status: string }) => o.status !== "cancelled")
+        .reduce((acc: number, o: { total: number }) => acc + (o.total || 0), 0);
+      const pesananPending = orders.filter((o: { status: string }) => o.status === "pending").length;
 
       setStats({
         totalBarang,
