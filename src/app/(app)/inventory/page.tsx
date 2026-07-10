@@ -188,7 +188,7 @@ export default function InventoryPage() {
           </div>
           <Link
             href="/reports"
-            className="px-4 py-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-colors"
+            className="px-4 py-2 bg-white text-blue-700 font-medium rounded-lg hover:bg-gray-100 transition-colors"
           >
             Lihat Laporan →
           </Link>
