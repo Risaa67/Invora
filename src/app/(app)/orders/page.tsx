@@ -179,15 +179,97 @@ export default function OrdersPage() {
   };
 
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+    // Dapatkan data order beserta items
+    const { data: orderData } = await supabase
+      .from("orders")
+      .select("status, order_items(product_id, jumlah)")
+      .eq("id", orderId)
+      .single();
+
+    if (!orderData) return;
+
+    const oldStatus = orderData.status;
+
+    // Update status order
     await supabase
       .from("orders")
       .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq("id", orderId);
+
+    // Jika status berubah ke "delivered" DAN sebelumnya bukan delivered, kurangi stok
+    if (newStatus === "delivered" && oldStatus !== "delivered") {
+      for (const item of orderData.order_items || []) {
+        if (item.product_id) {
+          // Ambil stok saat ini
+          const { data: product } = await supabase
+            .from("products")
+            .select("stok")
+            .eq("id", item.product_id)
+            .single();
+
+          if (product) {
+            const newStok = product.stok - item.jumlah;
+            await supabase
+              .from("products")
+              .update({ stok: Math.max(0, newStok), updated_at: new Date().toISOString() })
+              .eq("id", item.product_id);
+          }
+        }
+      }
+    }
+
+    // Jika status berubah dari "delivered" ke selain "delivered", kembalikan stok
+    if (oldStatus === "delivered" && newStatus !== "delivered") {
+      for (const item of orderData.order_items || []) {
+        if (item.product_id) {
+          const { data: product } = await supabase
+            .from("products")
+            .select("stok")
+            .eq("id", item.product_id)
+            .single();
+
+          if (product) {
+            await supabase
+              .from("products")
+              .update({ stok: product.stok + item.jumlah, updated_at: new Date().toISOString() })
+              .eq("id", item.product_id);
+          }
+        }
+      }
+    }
+
     fetchData();
   };
 
   const handleDelete = async (id: string, kode: string) => {
     if (confirm(`Yakin ingin menghapus pesanan "${kode}"?`)) {
+      // Ambil data order dulu
+      const { data: orderData } = await supabase
+        .from("orders")
+        .select("status, order_items(product_id, jumlah)")
+        .eq("id", id)
+        .single();
+
+      // Jika order sudah delivered, kembalikan stok
+      if (orderData?.status === "delivered") {
+        for (const item of orderData.order_items || []) {
+          if (item.product_id) {
+            const { data: product } = await supabase
+              .from("products")
+              .select("stok")
+              .eq("id", item.product_id)
+              .single();
+
+            if (product) {
+              await supabase
+                .from("products")
+                .update({ stok: product.stok + item.jumlah, updated_at: new Date().toISOString() })
+                .eq("id", item.product_id);
+            }
+          }
+        }
+      }
+
       await supabase.from("order_items").delete().eq("order_id", id);
       await supabase.from("orders").delete().eq("id", id);
       fetchData();
