@@ -94,7 +94,7 @@ export default function DashboardPage() {
       setRecentStockIn(recentInRes.data || []);
       setRecentStockOut(recentOutRes.data || []);
       setRecentOrders(orders);
-      setTopProducts(topData || []);
+      setTopProducts(topData.data || []);
       setLoading(false);
     };
 
